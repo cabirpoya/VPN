@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumVPN - Secure Connection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .bg-gradient-vpn {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+        }
+        .server-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .connection-circle {
+            width: 200px;
+            height: 200px;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(59, 130, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+        #vpnToggle:checked ~ .dot {
+            transform: translateX(100%);
+            background-color: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gradient-vpn text-white py-4 px-6 shadow-md">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-shield-alt text-2xl text-blue-300"></i>
+                    <h1 class="text-xl font-bold">Quantum<span class="text-blue-300">VPN</span></h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-full hover:bg-blue-900 transition">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="p-2 rounded-full hover:bg-blue-900 transition">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Connection Panel -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Secure Connection</h2>
+                        
+                        <!-- Connection Status -->
+                        <div class="flex flex-col items-center justify-center py-8">
+                            <div class="connection-circle rounded-full border-4 border-blue-500 flex items-center justify-center mb-6 relative pulse">
+                                <div class="absolute inset-0 bg-blue-500 opacity-10 rounded-full"></div>
+                                <div class="text-center z-10">
+                                    <div class="text-4xl font-bold text-blue-600" id="connectionStatus">OFF</div>
+                                    <div class="text-gray-500 mt-2" id="connectionTime">Not Connected</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-center mb-8">
+                                <h3 class="text-lg font-semibold text-gray-700 mr-3">Current Server:</h3>
+                                <span class="text-blue-600 font-medium" id="currentServer">Select a server</span>
+                            </div>
+                            
+                            <!-- Toggle Button -->
+                            <label for="vpnToggle" class="flex items-center cursor-pointer mb-8">
+                                <div class="relative">
+                                    <input type="checkbox" id="vpnToggle" class="sr-only">
+                                    <div class="block bg-gray-300 w-16 h-8 rounded-full"></div>
+                                    <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                                </div>
+                                <div class="ml-3 text-gray-700 font-medium">
+                                    Connect VPN
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <!-- Connection Info -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>
+                                    <span class="text-gray-600">Speed</span>
+                                </div>
+                                <div class="text-2xl font-bold text-gray-800" id="connectionSpeed">0 Mbps</div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-clock text-blue-500 mr-2"></i>
+                                    <span class="text-gray-600">Latency</span>
+                                </div>
+                                <div class="text-2xl font-bold text-gray-800" id="connectionLatency">0 ms</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Server List -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">Server Locations</h2>
+                            <button class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="relative">
+                                <input type="text" placeholder="Search servers..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                            <!-- Server Items -->
+                            <div class="server-card bg-gray-50 p-4 rounded-lg transition cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200" onclick="selectServer('USA - New York', 45, 82)">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">USA - New York</h3>
+                                        <p class="text-sm text-gray-500">Ultra fast server</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mr-2">45 Mbps</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">82 ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="server-card bg-gray-50 p-4 rounded-lg transition cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200" onclick="selectServer('UK - London', 52, 29)">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">UK - London</h3>
+                                        <p class="text-sm text-gray-500">Premium server</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mr-2">52 Mbps</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">29 ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="server-card bg-gray-50 p-4 rounded-lg transition cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200" onclick="selectServer('Japan - Tokyo', 38, 125)">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Japan - Tokyo</h3>
+                                        <p class="text-sm text-gray-500">Secure server</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mr-2">38 Mbps</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">125 ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="server-card bg-gray-50 p-4 rounded-lg transition cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200" onclick="selectServer('Germany - Berlin', 49, 43)">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Germany - Berlin</h3>
+                                        <p class="text-sm text-gray-500">Best privacy</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mr-2">49 Mbps</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">43 ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="server-card bg-gray-50 p-4 rounded-lg transition cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200" onclick="selectServer('Australia - Sydney', 32, 195)">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Australia - Sydney</h3>
+                                        <p class="text-sm text-gray-500">High security</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mr-2">32 Mbps</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">195 ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Features Section -->
+        <section class="bg-white py-12 px-4">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Why Choose QuantumVPN?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-xl text-center">
+                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-lock text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Military-Grade Encryption</h3>
+                        <p class="text-gray-600">256-bit AES encryption keeps your data secure from prying eyes and hackers.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl text-center">
+                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-globe text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Global Server Network</h3>
+                        <p class="text-gray-600">1000+ servers in 50+ countries to bypass geo-restrictions and censorship.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl text-center">
+                        <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user-secret text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">No Logs Policy</h3>
+                        <p class="text-gray-600">We don't track or store your online activity. Your privacy is guaranteed.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gradient-vpn text-white py-8 px-4">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-shield-alt text-2xl text-blue-300"></i>
+                        <h3 class="text-xl font-bold">Quantum<span class="text-blue-300">VPN</span></h3>
+                    </div>
+                    <p class="text-blue-100">Secure your digital life with our premium VPN service. Privacy first.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-4">Features</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-blue-100 hover:text-white">High Speed VPN</a></li>
+                        <li><a href="#" class="text-blue-100 hover:text-white">Secure Privacy</a></li>
+                        <li><a href="#" class="text-blue-100 hover:text-white">No Logs</a></li>
+                        <li><a href="#" class="text-blue-100 hover:text-white">Unlimited Bandwidth</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-blue-100 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-blue-100 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-blue-100 hover:text-white">Refund Policy</a></li>
+                        <li><a href="#" class="text-blue-100 hover:text-white">DMCA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-4">Contact Us</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-blue-100 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-blue-100 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-blue-100 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-blue-100 hover:text-white"><i class="fas fa-envelope"></i></a>
+                    </div>
+                    <p class="text-blue-100">support@quantumvpn.com</p>
+                </div>
+            </div>
+            <div class="container mx-auto border-t border-blue-800 mt-8 pt-8 text-center text-blue-100">
+                <p>&copy; 2023 QuantumVPN. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const vpnToggle = document.getElementById('vpnToggle');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const connectionTime = document.getElementById('connectionTime');
+        const currentServer = document.getElementById('currentServer');
+        const connectionSpeed = document.getElementById('connectionSpeed');
+        const connectionLatency = document.getElementById('connectionLatency');
+        
+        // Variables
+        let isConnected = false;
+        let selectedServer = null;
+        let selectedSpeed = 0;
+        let selectedLatency = 0;
+        let connectionStartTime = null;
+        let timerInterval = null;
+        
+        // Toggle VPN connection
+        vpnToggle.addEventListener('change', function() {
+            if (this.checked) {
+                if (!selectedServer) {
+                    alert('Please select a server first');
+                    this.checked = false;
+                    return;
+                }
+                connectVPN();
+            } else {
+                disconnectVPN();
+            }
+        });
+        
+        // Select server
+        function selectServer(server, speed, latency) {
+            selectedServer = server;
+            selectedSpeed = speed;
+            selectedLatency = latency;
+            currentServer.textContent = server;
+            
+            // Update stats immediately if connected
+            if (isConnected) {
+                connectionSpeed.textContent = speed + ' Mbps';
+                connectionLatency.textContent = latency + ' ms';
+            }
+        }
+        
+        // Connect VPN
+        function connectVPN() {
+            isConnected = true;
+            connectionStatus.textContent = 'ON';
+            connectionStatus.classList.remove('text-blue-600');
+            connectionStatus.classList.add('text-green-500');
+            
+            // Update connection time
+            connectionStartTime = new Date();
+            updateConnectionTime();
+            timerInterval = setInterval(updateConnectionTime, 1000);
+            
+            // Set connection metrics
+            connectionSpeed.textContent = selectedSpeed + ' Mbps';
+            connectionLatency.textContent = selectedLatency + ' ms';
+            
+            // Change pulse color to green
+            document.querySelector('.pulse').classList.add('shadow-green-500');
+            document.querySelector('.pulse').classList.remove('shadow-blue-500');
+        }
+        
+        // Disconnect VPN
+        function disconnectVPN() {
+            isConnected = false;
+            connectionStatus.textContent = 'OFF';
+            connectionStatus.classList.remove('text-green-500');
+            connectionStatus.classList.add('text-blue-600');
+            
+            // Reset connection time
+            clearInterval(timerInterval);
+            connectionTime.textContent = 'Not Connected';
+            
+            // Reset connection metrics
+            connectionSpeed.textContent = '0 Mbps';
+            connectionLatency.textContent = '0 ms';
+            
+            // Change pulse color back to blue
+            document.querySelector('.pulse').classList.remove('shadow-green-500');
+            document.querySelector('.pulse').classList.add('shadow-blue-500');
+        }
+        
+        // Update connection time
+        function updateConnectionTime() {
+            const now = new Date();
+            const diff = Math.floor((now - connectionStartTime) / 1000);
+            
+            const hours = Math.floor(diff / 3600);
+            const minutes = Math.floor((diff % 3600) / 60);
+            const seconds = diff % 60;
+            
+            connectionTime.textContent = 
+                (hours > 0 ? hours.toString().padStart(2, '0') + ':' : '') +
+                minutes.toString().padStart(2, '0') + ':' +
+                seconds.toString().padStart(2, '0');
+        }
+        
+        // Auto select first server
+        setTimeout(() => {
+            selectServer('USA - New York', 45, 82);
+        }, 500);
+    </script>
+</body>
+</html>
